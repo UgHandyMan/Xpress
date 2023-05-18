@@ -5,6 +5,19 @@ import NewClients from './NewClients';
 import Loans from './Loans';
 import Dashboard from './Dashboard';
 import './App.css';
+import {
+  createRxDatabase,
+  /* ... */
+} from 'rxdb';
+
+async function createDb() {
+    if (process.env.NODE_ENV !== "production") {
+        await import('rxdb/plugins/dev-mode').then(
+            module => addRxPlugin(module as any)
+        );
+    }
+    const db = createRxDatabase( /* ... */ );
+}
 
 function App() {
   const [loggedIn, setLoggedIn] = useState(false);
