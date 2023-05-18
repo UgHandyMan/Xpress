@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { createDatabase } from './database';
 import './App.css';
 
 function Deposits() {
@@ -9,13 +10,29 @@ function Deposits() {
 
   const handleFormSubmit = (e) => {
     e.preventDefault();
-    // TODO: Save deposit data to MongoDB database
+    // TODO: Save deposit data to database
+    try {
+      const db = await createDatabase();
+
+      // Access the 'deposits' collection
+      const depositsCollection = db.collection('deposits');
+
+      // Insert a new document
+      const deposit = await depositsCollection.insert({
+        name,
+        date,
+        amount,
+        notes,
+      });
     console.log('Deposit form submitted');
     // Reset form fields
     setName('');
     setDate('');
     setAmount('');
     setNotes('');
+  } catch (error) {
+      console.error('Error saving deposit data:', error);
+    }
   };
 
   return (
@@ -63,4 +80,3 @@ function Deposits() {
 }
 
 export default Deposits;
-
