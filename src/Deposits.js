@@ -12,7 +12,14 @@ function Deposits() {
     e.preventDefault();
     // TODO: Save deposit data to database
     try {
-      const db = await createDatabase();
+      const db = await createRxDatabase({
+          name: 'expressdb',                   // <- name
+          storage: getRxStorageDexie(),       // <- RxStorage
+          password: 'Badboy4life312922',             // <- password (optional)
+          multiInstance: true,                // <- multiInstance (optional, default: true)
+          eventReduce: true,                  // <- eventReduce (optional, default: false)
+          cleanupPolicy: {}                   // <- custom cleanup policy (optional) 
+});
 
       // Access the 'deposits' collection
       const depositsCollection = db.collection('deposits');

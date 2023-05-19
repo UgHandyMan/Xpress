@@ -1,49 +1,32 @@
-import { createRxDatabase } from 'rxdb';
-import { getRxStorageDexie } from 'rxdb/plugins/storage-dexie';
-import pouchdbAdapterMemory from 'pouchdb-adapter-memory'; // Use a specific adapter for your target platform
+import { createRxDatabase, addRxPlugin } from 'rxdb';
+import SQLiteAdapter from 'react-native-sqlite-adapter';
 
-// Add necessary plugins
-addRxPlugin(pouchdbAdapterMemory);
+// Import collection schemas
+import { depositsSchema } from './schemas';
 
-// Define the schema for the 'deposits' collection
-const depositsSchema = {
-  title: 'Deposits Schema',
-  description: 'Schema for the deposits collection',
-  version: 0,
-  type: 'object',
-  properties: {
-    _id: {
-      type: 'string',
-      primary: true,
-    },
-    name: {
-      type: 'string',
-    },
-    date: {
-      type: 'string',
-    },
-    amount: {
-      type: 'number',
-    },
-    notes: {
-      type: 'string',
-    },
-  },
-  required: ['name', 'date', 'amount'],
+// Add the SQLite adapter to RxDB
+addRxPlugin(SQLiteAdapter);
+
+// Database configuration
+const dbConfig = {
+  name: 'expressdb',               // Name of the database
+  adapter: 'react-native-sqlite',  // SQLite adapter
+  password: 'password',            // Optional: encryption password
 };
 
-// Create and export the RxDatabase instance
-export async function createDatabase() {
-  const db: RxDatabase = await createRxDatabase({
-    name: 'my-database', // Provide a name for your database
-    adapter: 'memory', // Use the appropriate adapter for your target platform
-  });
+// Function to create the RxDatabase instance
+export const createDatabase = async () => {
+  const db = await createRxDatabase(dbConfig);
 
-  // Add the 'deposits' collection to the database
-  await db.collection({
-    name: 'deposits',
-    schema: depositsSchema,
-  });
+  // Create collections
+  await Promise.all([
+    db.collection({
+      name: 'deposits',
+      schema: depositsSchema,
+    }),
+    // Add more collections here if needed
+  ]);
 
   return db;
-}
+};
+
