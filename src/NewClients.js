@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import sqlite3 from 'sqlite3';
 import './App.css';
 
 function NewClients() {
@@ -12,16 +13,47 @@ function NewClients() {
 
   const handleFormSubmit = (e) => {
     e.preventDefault();
-    // TODO: Save new client data to MongoDB database
-    console.log('New client form submitted');
-    // Reset form fields
-    setName('');
-    setDateOfBirth('');
-    setNationalId('');
-    setAddress('');
-    setResidence('');
-    setPhoneNumber('');
-    setOccupation('');
+
+    // Create a new SQLite database instance
+    const db = new sqlite3.Database('expressdb.sqlite');
+
+    // Create the new_clients table if it doesn't exist
+    db.run(`
+      CREATE TABLE IF NOT EXISTS new_clients (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT,
+        date_of_birth TEXT,
+        national_id TEXT,
+        address TEXT,
+        residence TEXT,
+        phone_number TEXT,
+        occupation TEXT
+      )
+    `);
+
+    // Insert the new client data into the database
+    db.run(
+      `INSERT INTO new_clients (name, date_of_birth, national_id, address, residence, phone_number, occupation) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      [name, dateOfBirth, nationalId, address, residence, phoneNumber, occupation],
+      (err) => {
+        if (err) {
+          console.error('Error inserting new client:', err);
+        } else {
+          console.log('New client saved successfully');
+          // Reset form fields
+          setName('');
+          setDateOfBirth('');
+          setNationalId('');
+          setAddress('');
+          setResidence('');
+          setPhoneNumber('');
+          setOccupation('');
+        }
+      }
+    );
+
+    // Close the database connection
+    db.close();
   };
 
   return (
