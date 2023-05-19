@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import sqlite3 from 'sqlite3';
+import './App.css';
 
 function Dashboard() {
   const [deposits, setDeposits] = useState([]);
