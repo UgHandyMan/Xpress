@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import sqlite3 from 'sqlite3';
+import './App.css';
 
 function Deposits() {
   const [name, setName] = useState('');
