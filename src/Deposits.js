@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { createDatabase } from './database';
-import './App.css';
+import sqlite3 from 'sqlite3';
 
 function Deposits() {
   const [name, setName] = useState('');
@@ -10,29 +9,41 @@ function Deposits() {
 
   const handleFormSubmit = (e) => {
     e.preventDefault();
-    // TODO: Save deposit data to database
-    try {
-      const db = await createDatabase();
 
-      // Access the 'deposits' collection
-      const depositsCollection = db.collection('deposits');
+    // Create a new SQLite database instance
+    const db = new sqlite3.Database('expressdb.sqlite');
 
-      // Insert a new document
-      const deposit = await depositsCollection.insert({
-        name,
-        date,
-        amount,
-        notes,
-      });
-    console.log('Deposit form submitted');
-    // Reset form fields
-    setName('');
-    setDate('');
-    setAmount('');
-    setNotes('');
-  } catch (error) {
-      console.error('Error saving deposit data:', error);
-    }
+    // Create the deposits table if it doesn't exist
+    db.run(`
+      CREATE TABLE IF NOT EXISTS deposits (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT,
+        date TEXT,
+        amount REAL,
+        notes TEXT
+      )
+    `);
+
+    // Insert the deposit data into the database
+    db.run(
+      `INSERT INTO deposits (name, date, amount, notes) VALUES (?, ?, ?, ?)`,
+      [name, date, amount, notes],
+      (err) => {
+        if (err) {
+          console.error('Error inserting deposit:', err);
+        } else {
+          console.log('Deposit saved successfully');
+          // Reset form fields
+          setName('');
+          setDate('');
+          setAmount('');
+          setNotes('');
+        }
+      }
+    );
+
+    // Close the database connection
+    db.close();
   };
 
   return (
