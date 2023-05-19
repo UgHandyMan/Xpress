@@ -1,5 +1,13 @@
 import React, { useState } from 'react';
+import sqlite3 from 'sqlite3';
 import './App.css';
+
+function Loans() {
+  const [name, setName] = useState('');
+  const [amount, setAmount] = useState('');
+  const [date, setDate] = useState('');
+  const [notes, setNotes] = useState('');
+
 
 function Loans() {
   const [name, setName] = useState('');
@@ -9,14 +17,43 @@ function Loans() {
 
   const handleFormSubmit = (e) => {
     e.preventDefault();
-    // TODO: Save loan data to MongoDB database
-    console.log('Loan form submitted');
-    // Reset form fields
-    setName('');
-    setAmount('');
-    setDate('');
-    setNotes('');
+
+    // Create a new SQLite database instance
+    const db = new sqlite3.Database('expressdb.sqlite');
+
+    // Create the loans table if it doesn't exist
+    db.run(`
+      CREATE TABLE IF NOT EXISTS loans (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT,
+        amount REAL,
+        date TEXT,
+        notes TEXT
+      )
+    `);
+
+    // Insert the loan data into the database
+    db.run(
+      `INSERT INTO loans (name, amount, date, notes) VALUES (?, ?, ?, ?)`,
+      [name, amount, date, notes],
+      (err) => {
+        if (err) {
+          console.error('Error inserting loan:', err);
+        } else {
+          console.log('Loan saved successfully');
+          // Reset form fields
+          setName('');
+          setAmount('');
+          setDate('');
+          setNotes('');
+        }
+      }
+    );
+
+    // Close the database connection
+    db.close();
   };
+
 
   return (
     <div className="form-container">
@@ -62,4 +99,3 @@ function Loans() {
 }
 
 export default Loans;
-
