@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import sqlite3 from 'sqlite3';
+import axios from 'axios';
 import './App.css';
 
 function NewClients() {
@@ -11,59 +11,43 @@ function NewClients() {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [occupation, setOccupation] = useState('');
 
-  const handleFormSubmit = (e) => {
+  const handleFormSubmit = async (e) => {
     e.preventDefault();
 
-    // Create a new SQLite database instance
-    const db = new sqlite3.Database('expressdb.sqlite');
+    try {
+      // Send a POST request to the server with the new client data
+      await axios.post('/new-clients', {
+        name,
+        date_of_birth: dateOfBirth,
+        national_id: nationalId,
+        address,
+        residence,
+        phone_number: phoneNumber,
+        occupation,
+      });
 
-    // Create the new_clients table if it doesn't exist
-    db.run(`
-      CREATE TABLE IF NOT EXISTS new_clients (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT,
-        date_of_birth TEXT,
-        national_id TEXT,
-        address TEXT,
-        residence TEXT,
-        phone_number TEXT,
-        occupation TEXT
-      )
-    `);
-
-    // Insert the new client data into the database
-    db.run(
-      `INSERT INTO new_clients (name, date_of_birth, national_id, address, residence, phone_number, occupation) VALUES (?, ?, ?, ?, ?, ?, ?)`,
-      [name, dateOfBirth, nationalId, address, residence, phoneNumber, occupation],
-      (err) => {
-        if (err) {
-          console.error('Error inserting new client:', err);
-        } else {
-          console.log('New client saved successfully');
-          // Reset form fields
-          setName('');
-          setDateOfBirth('');
-          setNationalId('');
-          setAddress('');
-          setResidence('');
-          setPhoneNumber('');
-          setOccupation('');
-        }
-      }
-    );
-
-    // Close the database connection
-    db.close();
+      console.log('New client saved successfully');
+      // Reset form fields
+      setName('');
+      setDateOfBirth('');
+      setNationalId('');
+      setAddress('');
+      setResidence('');
+      setPhoneNumber('');
+      setOccupation('');
+    } catch (error) {
+      console.error('Error saving new client data:', error);
+    }
   };
 
   return (
     <div className="form-container">
-      <h1>New Clients </h1>
+      <h1>New Clients</h1>
       <form onSubmit={handleFormSubmit}>
         <div>
           <label>Name:</label>
           <input
-	    Placeholder="Enter Name"
+            placeholder="Enter Name"
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
@@ -80,7 +64,7 @@ function NewClients() {
         <div>
           <label>National ID Number:</label>
           <input
-	    placeholder="Enter NIN"
+            placeholder="Enter NIN"
             type="text"
             value={nationalId}
             onChange={(e) => setNationalId(e.target.value)}
@@ -89,7 +73,7 @@ function NewClients() {
         <div>
           <label>Work Address:</label>
           <input
-	    placeholder="Address"
+            placeholder="Address"
             type="text"
             value={address}
             onChange={(e) => setAddress(e.target.value)}
@@ -98,7 +82,7 @@ function NewClients() {
         <div>
           <label>Residence:</label>
           <input
-	    placeholder="Place of Residence"
+            placeholder="Place of Residence"
             type="text"
             value={residence}
             onChange={(e) => setResidence(e.target.value)}
@@ -107,7 +91,7 @@ function NewClients() {
         <div>
           <label>Phone Number:</label>
           <input
-	    placeholder="Enter Phone Number starting with 256"
+            placeholder="Enter Phone Number starting with 256"
             type="number"
             value={phoneNumber}
             onChange={(e) => setPhoneNumber(e.target.value)}

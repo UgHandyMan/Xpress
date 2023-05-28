@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import sqlite3 from 'sqlite3';
+import axios from 'axios';
 import './App.css';
 
 function Deposits() {
@@ -8,80 +8,28 @@ function Deposits() {
   const [amount, setAmount] = useState('');
   const [notes, setNotes] = useState('');
 
-<<<<<<< HEAD
-  const RxDB = require('rxdb');
-  async function createRxDatabase() {
-  // Initialize the database
-  const db = await RxDB.create({
-    name: 'expressdb',
-    adapter: 'idb', // Use IndexedDB adapter
-    password: 'Badboy4life312922', // Optional: Set a password for encryption
-    multiInstance: true,                // <- multiInstance (optional, default: true)
-    eventReduce: true,                  // <- eventReduce (optional, default: false)
-    cleanupPolicy: {}                   // <- custom cleanup policy (optional) 
-});
-=======
-  const handleFormSubmit = (e) => {
+  const handleFormSubmit = async (e) => {
     e.preventDefault();
->>>>>>> bf590ca4a1bcc332a5d0072487d77b2c3b63e368
 
-    // Create a new SQLite database instance
-    const db = new sqlite3.Database('expressdb.sqlite');
-
-<<<<<<< HEAD
-      // Insert a new document
-      const deposit = await depositsCollection.insert({
+    try {
+      // Make an API call to save the deposit data
+      await axios.post('http://localhost:3000/deposits', {
         name,
         date,
         amount,
         notes,
       });
-    console.log('Deposit form submitted');
 
-    const handleSaveDeposit = async () => {
-  try {
-    // TODO: Save deposit data to database
+      console.log('Deposit saved successfully');
 
-    setName('');
-    setDate('');
-    setAmount('');
-    setNotes('');
-  } catch (error) {
+      // Reset form fields
+      setName('');
+      setDate('');
+      setAmount('');
+      setNotes('');
+    } catch (error) {
       console.error('Error saving deposit data:', error);
     }
-=======
-    // Create the deposits table if it doesn't exist
-    db.run(`
-      CREATE TABLE IF NOT EXISTS deposits (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT,
-        date TEXT,
-        amount REAL,
-        notes TEXT
-      )
-    `);
-
-    // Insert the deposit data into the database
-    db.run(
-      `INSERT INTO deposits (name, date, amount, notes) VALUES (?, ?, ?, ?)`,
-      [name, date, amount, notes],
-      (err) => {
-        if (err) {
-          console.error('Error inserting deposit:', err);
-        } else {
-          console.log('Deposit saved successfully');
-          // Reset form fields
-          setName('');
-          setDate('');
-          setAmount('');
-          setNotes('');
-        }
-      }
-    );
-
-    // Close the database connection
-    db.close();
->>>>>>> bf590ca4a1bcc332a5d0072487d77b2c3b63e368
   };
 
   return (
@@ -91,7 +39,7 @@ function Deposits() {
         <div>
           <label>Name:</label>
           <input
-	    placeholder="Name"
+            placeholder="Name"
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
@@ -100,7 +48,7 @@ function Deposits() {
         <div>
           <label>Date:</label>
           <input
-	    placeholder="Date"
+            placeholder="Date"
             type="date"
             value={date}
             onChange={(e) => setDate(e.target.value)}
@@ -109,7 +57,7 @@ function Deposits() {
         <div>
           <label>Amount:</label>
           <input
-	    placeholder="Amount"
+            placeholder="Amount"
             type="number"
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
@@ -129,3 +77,4 @@ function Deposits() {
 }
 
 export default Deposits;
+
