@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { createDatabase } from './database';
+import sqlite3 from 'sqlite3';
 import './App.css';
 
 function Deposits() {
@@ -8,6 +8,7 @@ function Deposits() {
   const [amount, setAmount] = useState('');
   const [notes, setNotes] = useState('');
 
+<<<<<<< HEAD
   const RxDB = require('rxdb');
   async function createRxDatabase() {
   // Initialize the database
@@ -19,10 +20,15 @@ function Deposits() {
     eventReduce: true,                  // <- eventReduce (optional, default: false)
     cleanupPolicy: {}                   // <- custom cleanup policy (optional) 
 });
+=======
+  const handleFormSubmit = (e) => {
+    e.preventDefault();
+>>>>>>> bf590ca4a1bcc332a5d0072487d77b2c3b63e368
 
-      // Access the 'deposits' collection
-      const depositsCollection = db.collection('deposits');
+    // Create a new SQLite database instance
+    const db = new sqlite3.Database('expressdb.sqlite');
 
+<<<<<<< HEAD
       // Insert a new document
       const deposit = await depositsCollection.insert({
         name,
@@ -43,6 +49,39 @@ function Deposits() {
   } catch (error) {
       console.error('Error saving deposit data:', error);
     }
+=======
+    // Create the deposits table if it doesn't exist
+    db.run(`
+      CREATE TABLE IF NOT EXISTS deposits (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT,
+        date TEXT,
+        amount REAL,
+        notes TEXT
+      )
+    `);
+
+    // Insert the deposit data into the database
+    db.run(
+      `INSERT INTO deposits (name, date, amount, notes) VALUES (?, ?, ?, ?)`,
+      [name, date, amount, notes],
+      (err) => {
+        if (err) {
+          console.error('Error inserting deposit:', err);
+        } else {
+          console.log('Deposit saved successfully');
+          // Reset form fields
+          setName('');
+          setDate('');
+          setAmount('');
+          setNotes('');
+        }
+      }
+    );
+
+    // Close the database connection
+    db.close();
+>>>>>>> bf590ca4a1bcc332a5d0072487d77b2c3b63e368
   };
 
   return (
