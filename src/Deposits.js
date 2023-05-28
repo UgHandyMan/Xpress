@@ -8,17 +8,16 @@ function Deposits() {
   const [amount, setAmount] = useState('');
   const [notes, setNotes] = useState('');
 
-  const handleFormSubmit = (e) => {
-    e.preventDefault();
-    // TODO: Save deposit data to database
-    try {
-      const db = await createRxDatabase({
-          name: 'expressdb',                   // <- name
-          storage: getRxStorageDexie(),       // <- RxStorage
-          password: 'Badboy4life312922',             // <- password (optional)
-          multiInstance: true,                // <- multiInstance (optional, default: true)
-          eventReduce: true,                  // <- eventReduce (optional, default: false)
-          cleanupPolicy: {}                   // <- custom cleanup policy (optional) 
+  const RxDB = require('rxdb');
+  async function createRxDatabase() {
+  // Initialize the database
+  const db = await RxDB.create({
+    name: 'expressdb',
+    adapter: 'idb', // Use IndexedDB adapter
+    password: 'Badboy4life312922', // Optional: Set a password for encryption
+    multiInstance: true,                // <- multiInstance (optional, default: true)
+    eventReduce: true,                  // <- eventReduce (optional, default: false)
+    cleanupPolicy: {}                   // <- custom cleanup policy (optional) 
 });
 
       // Access the 'deposits' collection
@@ -32,7 +31,11 @@ function Deposits() {
         notes,
       });
     console.log('Deposit form submitted');
-    // Reset form fields
+
+    const handleSaveDeposit = async () => {
+  try {
+    // TODO: Save deposit data to database
+
     setName('');
     setDate('');
     setAmount('');
